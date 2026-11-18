@@ -78,4 +78,3 @@ config_file = Path(__file__).parents[2] / 'conf' / 'app_config.yaml'
 context = OmegaConf.load(config_file)
 schema = OmegaConf.structured(AppConfig)
 app_config: AppConfig = OmegaConf.to_object(OmegaConf.merge(schema, context))
-print(app_config)

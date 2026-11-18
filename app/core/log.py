@@ -51,25 +51,32 @@ if app_config.logging.console.enable:
 
 # 如果配置中开启了文件日志输出
 if app_config.logging.file.enable:
+
     # 解析日志文件存储路径
-    path = Path(app_config.logging.file.path)
+    PROJECT_ROOT = Path(__file__).parents[2]
+    LOG_DIR = PROJECT_ROOT / Path(app_config.logging.file.path)
+    LOG_FILE = LOG_DIR / "app.log"
+
     # 递归创建日志目录（如果不存在），已存在则不报错
-    path.mkdir(parents=True, exist_ok=True)
+    LOG_DIR.mkdir(parents=True, exist_ok=True)
+
     # 添加文件日志输出器
     logger.add(
-        sink=path / "app.log",  # 日志文件完整路径
+        sink=LOG_FILE,  # 日志文件完整路径
         level=app_config.logging.file.level,  # 文件日志输出级别
         format=log_format,  # 使用自定义的日志格式
         rotation=app_config.logging.file.rotation,  # 日志文件分割规则（如按大小/时间）
         retention=app_config.logging.file.retention,  # 日志文件保留时长
         encoding="utf-8"  # 日志文件编码格式
     )
+
 if __name__ == '__main__':
     async def graph(request: str):
         # 获取ID值
         id = request_id_ctx_var.get()
         # 输出结果
         logger.info(id)
+        logger.info(request)
 
 
     async def test1():

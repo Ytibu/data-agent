@@ -9,6 +9,7 @@ authors = [
 requires-python = ">=3.11"
 dependencies = [
     "asyncmy>=0.2.18",
+    "contextvars>=2.4",
     "cryptography>=50.0.2",
     "elasticsearch[async]>=8,<9",
     "fastapi[standard]>=0.163.1",
