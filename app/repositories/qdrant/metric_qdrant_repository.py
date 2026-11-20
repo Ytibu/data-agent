@@ -3,6 +3,7 @@ from qdrant_client.http.models import VectorParams, Distance, PointStruct
 
 from app.conf.app_config import app_config
 from app.models.qdrant.metric_info_qdrant import MetricInfoQdrant
+from app.repositories.qdrant.payload_points import delete_stale_points, ensure_keyword_indexes
 
 
 class MetricQdrantRepository:
@@ -22,8 +23,15 @@ class MetricQdrantRepository:
                 vectors_config=VectorParams(size=app_config.qdrant.embedding_size, distance=Distance.COSINE)
             )
 
+    async def ensure_index(self) -> None:
+        await self.ensure_collection()
+        await ensure_keyword_indexes(self.client, self.collection_name, "id")
+
+    async def delete_stale_points(self, point_ids_by_entity: dict[str, list[str]]) -> None:
+        await delete_stale_points(self.client, self.collection_name, point_ids_by_entity)
+
     async def upsert_embeddings(self, ids: list[str], embeddings: list[list[float]], payloads: list[MetricInfoQdrant],
-                                batch_size=5):
+                                batch_size: int= 10):
         """
         保存指标信息到qdrant
         :param ids:
@@ -49,5 +57,6 @@ class MetricQdrantRepository:
             # 批量存储指标
             await self.client.upsert(
                 collection_name=self.collection_name,
-                points=points
+                points=points,
+                wait=True,
             )
