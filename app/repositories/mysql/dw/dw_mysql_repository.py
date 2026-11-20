@@ -1,3 +1,5 @@
+from collections.abc import AsyncGenerator
+
 from sqlalchemy import column, select, table, text
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.sql import quoted_name
@@ -19,7 +21,20 @@ class DWMysqlRepository:
 
 
     async def get_column_values(self, table_name: str, column_name: str, limit: int = 10) -> list[str]:
-        source = table(quoted_name(table_name, True), column(quoted_name(column_name, True)))
-        statement = select(source.c[column_name]).distinct().limit(limit)
-        result = await self.session.execute(statement)
+        result = await self.session.execute(self._distinct_column_values(table_name, column_name).limit(limit))
         return [str(value) for value in result.scalars()]
+
+    async def iter_column_value_batches(self, table_name: str, column_name: str) -> AsyncGenerator[list[str], None]:
+        """分批读取全部去重取值，供全文索引使用。"""
+        statement = self._distinct_column_values(table_name, column_name)
+        result = await self.session.stream_scalars(statement.execution_options(yield_per=512))
+        try:
+            async for batch in result.partitions():
+                yield [str(value) for value in batch]
+        finally:
+            await result.close()
+
+    @staticmethod
+    def _distinct_column_values(table_name: str, column_name: str):
+        source = table(quoted_name(table_name, True), column(quoted_name(column_name, True)))
+        return select(source.c[column_name]).distinct()
