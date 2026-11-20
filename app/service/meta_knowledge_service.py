@@ -16,7 +16,7 @@ from app.conf.meta_config import MetaConfig
 from app.entities.table_info import TableInfo
 from app.entities.column_info import ColumnInfo
 from app.entities.metric_info import MetricInfo
-from app.models.es.value_info_es import ValueInfoEs
+from app.models.es.value_info_es import ValueInfoES
 from app.models.qdrant.metric_info_qdrant import MetricInfoQdrant
 
 
@@ -161,7 +161,7 @@ class MetaKnowledgeService:
             async with aclosing(batches):
                 async for values in batches:
                     value_infos = [
-                        ValueInfoEs(
+                        ValueInfoES(
                             id=str(uuid.uuid5(uuid.NAMESPACE_OID, f"{column_info.id}:{value}")),
                             value=value,
                             type=column_info.type,

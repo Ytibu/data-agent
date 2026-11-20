@@ -41,5 +41,7 @@ es:
 
 
 llm:
-  model_name: deepseek-chat
+  model_name: deepseek-flash
+  model_provider: openai
+  base_url: https://api.deepseek.com
   api_key: <deepseek_api_key>

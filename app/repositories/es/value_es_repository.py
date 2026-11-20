@@ -1,6 +1,6 @@
 from elasticsearch import AsyncElasticsearch
 
-from app.models.es.value_info_es import ValueInfoEs
+from app.models.es.value_info_es import ValueInfoES
 
 
 class ValueEsRepository:
@@ -57,7 +57,7 @@ class ValueEsRepository:
                 raise RuntimeError(f"Elasticsearch 旧取值清理未完成：{response}")
 
     async def upsert_values(
-        self, value_infos: list[ValueInfoEs], batch_size: int = 20, *, sync_run: str | None = None
+        self, value_infos: list[ValueInfoES], batch_size: int = 20, *, sync_run: str | None = None
     ) -> None:
         """
         为值数据添加全文索引

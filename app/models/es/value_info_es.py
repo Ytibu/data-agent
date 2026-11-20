@@ -1,7 +1,7 @@
 from typing import TypedDict
 
 
-class ValueInfoEs(TypedDict):
+class ValueInfoES(TypedDict):
     id:str
     value:str
     type:str

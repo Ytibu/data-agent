@@ -60,6 +60,8 @@ class ESConfig:
 @dataclass
 class LLMConfig:
     model_name: str
+    model_provider: str
+    base_url: str
     api_key: str
 
 
